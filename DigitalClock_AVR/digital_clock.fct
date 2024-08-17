@@ -1,0 +1,4 @@
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"digital_clock.c" LINE:30
+setclockmin DSTACK_USAGE:2 DSTACK_LEVEL:2 FILE:"digital_clock.c" LINE:74
+setclockhour DSTACK_USAGE:2 DSTACK_LEVEL:4 FILE:"digital_clock.c" LINE:106
+minute_def DSTACK_USAGE:4 DSTACK_LEVEL:8 FILE:"digital_clock.c" LINE:170

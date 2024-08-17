@@ -1,0 +1,205 @@
+#include <io.h>
+#include <delay.h>
+
+#define up    (PINB & (1<<0))
+#define down  (PINB & (1<<1))
+#define min   (PINB & (1<<2))
+#define hr    (PINB & (1<<3))
+#define enter (PINB & (1<<4))
+
+signed char hour = 0;
+signed char minute = 0;
+unsigned char digitSelect = 0;
+unsigned char sevenSegDigit[4] = {0};
+unsigned char sevenSegNum[10] =
+{
+    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
+    0x92, 0x82, 0xF8, 0x80, 0x90
+};
+
+
+void digitselect_def (void);
+void GPI (void);
+void minute_def (void);
+void hour_def (void);
+void setclockhour (void);
+void setclockmin (void);
+
+
+
+void main(void)
+{
+    unsigned int delayCnt = 0;
+
+
+    GPI () ;
+    minute_def();
+
+    while (1)
+    {
+
+        digitselect_def ();
+
+
+        if (delayCnt >= 100)
+        {
+            delayCnt = 0;
+            minute++;
+            minute_def();
+        }
+
+        hour_def ();
+
+
+
+        delay_ms(5);
+        delayCnt++;
+
+        if(min ==0)
+        {
+            setclockmin();
+        }
+        if(hr ==0)
+        {
+
+            setclockhour();
+
+        }
+
+
+     }
+}
+
+
+void setclockmin (void)
+{
+    unsigned char flagminup =0;
+    unsigned char flagmindown =0;
+    while(enter !=0)
+    {
+          minute_def();
+          digitselect_def();
+          GPI();
+          if(up ==0 && flagminup ==0)
+          {
+               minute++;
+               if(minute >=60){minute =0;}
+               flagminup =1;
+          }
+          if(up !=0){flagminup =0;}
+          if(down ==0 && flagmindown ==0)
+          {
+               minute--;
+               if(minute <0){minute =59;}
+               flagmindown =1;
+          }
+          if(down !=0){flagmindown =0;}
+          if(hr ==0)
+             {
+                 setclockhour();
+             }
+     }
+
+}
+
+
+void setclockhour (void)
+{
+     unsigned char flaghourdown =0;
+     unsigned char flaghourup =0;
+     while(enter !=0)
+     {
+          minute_def();
+          digitselect_def();
+          hour_def ();
+          GPI();
+          if(up ==0 && flaghourup ==0)
+          {
+               hour++;
+               if(hour >24){hour =0;}
+               flaghourup =1;
+          }
+          if(up !=0){flaghourup =0;}
+          if(down ==0 && flaghourdown ==0)
+          {
+               hour--;
+               if(hour <0){hour =24;}
+               flaghourdown =1;
+          }
+          if(down !=0){flaghourdown =0;}
+          if(min ==0)
+          {
+          setclockmin();
+          }
+     }
+
+}
+
+
+
+void digitselect_def (void)
+{
+
+        PORTD = 1 << digitSelect;
+        PORTC = sevenSegDigit[digitSelect];
+        if (++digitSelect >= 4)
+        {
+            digitSelect = 0;
+        }
+
+            if (digitSelect == 3)
+        {
+            PORTC ^= (1 << 7);
+        }
+
+
+
+}
+
+
+void GPI (void)
+{
+    DDRC = 0xFF;
+    DDRD |= ((1 << 0) | (1 << 1) | (1 << 2) | (1 << 3));
+    DDRB &= ~((1 << 0)|(1 << 1)|(1 << 2)|(1<<4));
+
+    PORTB |= (1 << 0)|(1 << 1)|(1 << 2)|(1 << 3)|(1<<4);
+}
+
+
+void minute_def (void)
+{
+    unsigned int temp = 0;
+    unsigned char i = 0;
+
+    if (minute == 60)
+    {
+            minute = 0;
+            hour++;
+            if (hour >= 24)
+            {
+                hour = 0;
+            }
+    }
+    temp = minute;
+    for (i = 0; i < 2; i++)
+    {
+            sevenSegDigit[i] = sevenSegNum[temp % 10];
+            temp /= 10;
+    }
+
+}
+
+void hour_def (void)
+{
+        unsigned char s = 0;
+        unsigned int temp2 = 0;
+        temp2 = hour;
+        for (s = 2; s < 4; s++)
+        {
+            sevenSegDigit[s] = sevenSegNum[temp2 % 10];
+            temp2 /= 10;
+        }
+}
+
+

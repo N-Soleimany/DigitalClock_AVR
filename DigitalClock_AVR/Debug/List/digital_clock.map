@@ -1,0 +1,27 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+sevenSegDigit                                                                     0x0160       4
+sevenSegNum                                                                       0x0164      10
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+hour                                                                              R5           1
+minute                                                                            R4           1
+digitSelect                                                                       R7           1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+main                                                                              0x00065     26
+setclockmin                                                                       0x0007F     40
+setclockhour                                                                      0x000A7     43
+digitselect_def                                                                   0x000D2     24
+GPI                                                                               0x000EA     12
+minute_def                                                                        0x000F6     38
+hour_def                                                                          0x0011C     32
